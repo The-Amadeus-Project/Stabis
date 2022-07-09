@@ -1,5 +1,4 @@
 
-
 #[derive(PartialEq, Eq, Debug, Clone)]
 pub enum TokenType {
     // types
@@ -11,25 +10,18 @@ pub enum TokenType {
 
     Identifier,
 
+    // keywords
+    If,
+    Else,
+    While,
+    Import,
+
     // Operation
     MathOperation,
-    VariableMathOperation,
-    AssignmentOperator,
     DirectMemberSelection,
     ComparisonOperation,
 
-
-    // keywords
-    Import,
-    Return,
-    Fun,
-    And,
-    If,
-    Else,
-    Or,
-
     // symbols
-    EndLine,
     EndOfFile,
     BracketOpen,
     BracketClose,
@@ -37,7 +29,6 @@ pub enum TokenType {
     CurlyBracketClose,
     ParenthesisOpen,
     ParenthesisClose,
-    SeperatorComma,
 
     NullForParser
 }
@@ -151,7 +142,8 @@ impl Lexer {
     }
     pub fn add_base(&mut self, tok_type: TokenType, value: String){
         let mut tok = Token::new(tok_type, value);
-        tok.set_xy(self.tok_start_x as u32, self.tok_start_y as u32);
+        tok.x = self.tok_start_x as u32;
+        tok.y = self.tok_start_y as u32;
         self.current_tokens.push(tok);
     }
     pub fn add_special(&mut self, tok_type: TokenType ){
@@ -301,13 +293,8 @@ impl Lexer {
                     unknown_length = "".to_string();
                 } else if id_on {
                     match &*unknown_length {
-                        "and" => self.add_special(TokenType::And),
-                        "or" => self.add_special(TokenType::Or),
-                        "import" =>  self.add_special(TokenType::Import),
-                        "return" => self.add_special(TokenType::Return),
                         "if" => self.add_special(TokenType::If),
                         "else" => self.add_special(TokenType::Else),
-                        "fun" => self.add_special(TokenType::Fun),
                         "true" => self.add_special_bare(TokenType::Boolean, "true".to_string()),
                         "false" => self.add_special_bare(TokenType::Boolean, "false".to_string()),
                         _ => {self.add_identifier(unknown_length.clone())}
@@ -371,11 +358,9 @@ impl Lexer {
                             }
                     },
                     '*' => self.add_special_bare(TokenType::MathOperation, "*".to_string()),
-                    ';' => self.add_special(TokenType::EndLine),
                     '.' => self.add_special(TokenType::DirectMemberSelection),
                     '(' => self.add_special(TokenType::ParenthesisOpen),
                     ')' => self.add_special(TokenType::ParenthesisClose),
-                    ',' => self.add_special(TokenType::SeperatorComma),
                     '>' =>
                         {
                             let next = self.get_next_char();
@@ -399,9 +384,6 @@ impl Lexer {
                             let next_char = next.unwrap();
                             if next_char == '=' {
                                 self.add_special_bare(TokenType::ComparisonOperation, "<=".to_string());
-                                self.next_char();
-                            } else if next_char == '-' {
-                                self.add_special(TokenType::AssignmentArrow);
                                 self.next_char();
                             } else {
                                 self.add_special_bare(TokenType::ComparisonOperation, "<".to_string())
@@ -428,12 +410,8 @@ impl Lexer {
             }
         } else if id_on {
             match &*unknown_length {
-                "and" => self.add_special(TokenType::And),
-                "or" => self.add_special(TokenType::Or),
                 "import" => self.add_special(TokenType::Import),
-                "return" => self.add_special(TokenType::Return),
                 "if" => self.add_special(TokenType::If),
-                "fun" => self.add_special(TokenType::Fun),
                 "true" => self.add_special_bare(TokenType::Boolean, "true".to_string()),
                 "false" => self.add_special_bare(TokenType::Boolean, "false".to_string()),
                 _ => {self.add_identifier(unknown_length.clone())}
@@ -466,107 +444,106 @@ fn single_test(expected: Vec<(TokenType, String)>, to_lex: String){
     }
 }
 
-pub fn lexer_test(){
-    println!("Running lexer tests..");
-    // (TokenType::, "".to_string())
-
-   //   single_test( vec![
-   //      (TokenType::, "".to_string()),
-   //      (TokenType::, "".to_string()),
-   //      (TokenType::, "".to_string()),
-   //      (TokenType::, "".to_string()),
-   //      (TokenType::, "".to_string()),
-   //  ],
-   // r#""#.to_string());
-
-    single_test( vec![
-        (TokenType::Identifier, "int".to_string()),
-        (TokenType::Identifier, "name".to_string()),
-        (TokenType::Integer, "123".to_string()),
-        (TokenType::EndLine, "".to_string()),
-        (TokenType::EndOfFile, "".to_string())
-    ],
-   r"int name 123;".to_string());
-
-    single_test( vec![
-        (TokenType::Identifier, "str".to_string()),
-        (TokenType::Identifier, "var".to_string()),
-        (TokenType::String, "hello".to_string()),
-        (TokenType::EndLine, "".to_string()),
-        (TokenType::EndOfFile, "".to_string())
-    ],
-   r#"str var "hello"; "#.to_string());
-
-    single_test( vec![
-        (TokenType::If, "".to_string()),
-        (TokenType::Identifier, "name".to_string()),
-        (TokenType::ComparisonOperation, "==".to_string()),
-        (TokenType::Integer, "123".to_string()),
-        (TokenType::CurlyBracketOpen, "".to_string()),
-        (TokenType::CurlyBracketClose, "".to_string()),
-        (TokenType::EndOfFile, "".to_string()),
-    ],
-   r"if name == 123{}".to_string());
-
-     single_test( vec![
-        (TokenType::Identifier, "int".to_string()),
-        (TokenType::Identifier, "name".to_string()),
-        (TokenType::Integer, "123".to_string()),
-        (TokenType::EndLine, "".to_string()),
-        (TokenType::If, "".to_string()),
-        (TokenType::Identifier, "name".to_string()),
-        (TokenType::ComparisonOperation, ">".to_string()),
-        (TokenType::Integer, "100".to_string()),
-        (TokenType::CurlyBracketOpen, "".to_string()),
-        (TokenType::Identifier, "out".to_string()),
-        (TokenType::ParenthesisOpen, "".to_string()),
-        (TokenType::Identifier, "name".to_string()),
-        (TokenType::ParenthesisClose, "".to_string()),
-        (TokenType::EndLine, "".to_string()),
-        (TokenType::CurlyBracketClose, "".to_string()),
-        (TokenType::Else, "".to_string()),
-        (TokenType::If, "".to_string()),
-        (TokenType::Identifier, "name".to_string()),
-        (TokenType::ComparisonOperation, "<".to_string()),
-        (TokenType::Integer, "123".to_string()),
-        (TokenType::Or, "".to_string()),
-        (TokenType::Identifier, "name".to_string()),
-        (TokenType::ComparisonOperation, "<".to_string()),
-        (TokenType::Integer, "123".to_string()),
-        (TokenType::And, "".to_string()),
-        (TokenType::Identifier, "name".to_string()),
-        (TokenType::ComparisonOperation, "<".to_string()),
-        (TokenType::Integer, "123".to_string()),
-        (TokenType::CurlyBracketOpen, "".to_string()),
-        (TokenType::Identifier, "out".to_string()),
-        (TokenType::ParenthesisOpen, "".to_string()),
-        (TokenType::String, "huh?".to_string()),
-        (TokenType::ParenthesisClose, "".to_string()),
-        (TokenType::EndLine, "".to_string()),
-        (TokenType::CurlyBracketClose, "".to_string()),
-        (TokenType::Fun, "".to_string()),
-        (TokenType::Identifier, "make".to_string()),
-        (TokenType::ParenthesisOpen, "".to_string()),
-        (TokenType::ParenthesisClose, "".to_string()),
-        (TokenType::Identifier, "int".to_string()),
-        (TokenType::CurlyBracketOpen, "".to_string()),
-        (TokenType::Return, "".to_string()),
-        (TokenType::Integer, "123".to_string()),
-        (TokenType::EndLine, "".to_string()),
-        (TokenType::CurlyBracketClose, "".to_string()),
-        (TokenType::EndOfFile, "".to_string()),
-    ],
-   r#"
-   int name 123;
-   if name > 100 {
-      out(name);
-   } else if name < 123 or name < 123 and name < 123 {
-        out("huh?");
-   }
-   fun make() int {
-        return 123;
-   }
-   "#.to_string());
-
-    println!("Lexer tests complete");
-}
+// pub fn lexer_test(){
+//     println!("Running lexer tests..");
+//     // (TokenType::, "".to_string())
+//
+//    //   single_test( vec![
+//    //      (TokenType::, "".to_string()),
+//    //      (TokenType::, "".to_string()),
+//    //      (TokenType::, "".to_string()),
+//    //      (TokenType::, "".to_string()),
+//    //      (TokenType::, "".to_string()),
+//    //  ],
+//    // r#""#.to_string());
+//
+//     single_test( vec![
+//         (TokenType::Identifier, "int".to_string()),
+//         (TokenType::Identifier, "name".to_string()),
+//         (TokenType::Integer, "123".to_string()),
+//         (TokenType::EndOfFile, "".to_string())
+//     ],
+//    r"int name 123".to_string());
+//
+//     single_test( vec![
+//         (TokenType::Identifier, "str".to_string()),
+//         (TokenType::Identifier, "var".to_string()),
+//         (TokenType::String, "hello".to_string()),
+//         (TokenType::EndLine, "".to_string()),
+//         (TokenType::EndOfFile, "".to_string())
+//     ],
+//    r#"str var "hello"; "#.to_string());
+//
+//     single_test( vec![
+//         (TokenType::If, "".to_string()),
+//         (TokenType::Identifier, "name".to_string()),
+//         (TokenType::ComparisonOperation, "==".to_string()),
+//         (TokenType::Integer, "123".to_string()),
+//         (TokenType::CurlyBracketOpen, "".to_string()),
+//         (TokenType::CurlyBracketClose, "".to_string()),
+//         (TokenType::EndOfFile, "".to_string()),
+//     ],
+//    r"if name == 123{}".to_string());
+//
+//      single_test( vec![
+//         (TokenType::Identifier, "int".to_string()),
+//         (TokenType::Identifier, "name".to_string()),
+//         (TokenType::Integer, "123".to_string()),
+//         (TokenType::EndLine, "".to_string()),
+//         (TokenType::If, "".to_string()),
+//         (TokenType::Identifier, "name".to_string()),
+//         (TokenType::ComparisonOperation, ">".to_string()),
+//         (TokenType::Integer, "100".to_string()),
+//         (TokenType::CurlyBracketOpen, "".to_string()),
+//         (TokenType::Identifier, "out".to_string()),
+//         (TokenType::ParenthesisOpen, "".to_string()),
+//         (TokenType::Identifier, "name".to_string()),
+//         (TokenType::ParenthesisClose, "".to_string()),
+//         (TokenType::EndLine, "".to_string()),
+//         (TokenType::CurlyBracketClose, "".to_string()),
+//         (TokenType::Else, "".to_string()),
+//         (TokenType::If, "".to_string()),
+//         (TokenType::Identifier, "name".to_string()),
+//         (TokenType::ComparisonOperation, "<".to_string()),
+//         (TokenType::Integer, "123".to_string()),
+//         (TokenType::Or, "".to_string()),
+//         (TokenType::Identifier, "name".to_string()),
+//         (TokenType::ComparisonOperation, "<".to_string()),
+//         (TokenType::Integer, "123".to_string()),
+//         (TokenType::And, "".to_string()),
+//         (TokenType::Identifier, "name".to_string()),
+//         (TokenType::ComparisonOperation, "<".to_string()),
+//         (TokenType::Integer, "123".to_string()),
+//         (TokenType::CurlyBracketOpen, "".to_string()),
+//         (TokenType::Identifier, "out".to_string()),
+//         (TokenType::ParenthesisOpen, "".to_string()),
+//         (TokenType::String, "huh?".to_string()),
+//         (TokenType::ParenthesisClose, "".to_string()),
+//         (TokenType::EndLine, "".to_string()),
+//         (TokenType::CurlyBracketClose, "".to_string()),
+//         (TokenType::Fun, "".to_string()),
+//         (TokenType::Identifier, "make".to_string()),
+//         (TokenType::ParenthesisOpen, "".to_string()),
+//         (TokenType::ParenthesisClose, "".to_string()),
+//         (TokenType::Identifier, "int".to_string()),
+//         (TokenType::CurlyBracketOpen, "".to_string()),
+//         (TokenType::Return, "".to_string()),
+//         (TokenType::Integer, "123".to_string()),
+//         (TokenType::EndLine, "".to_string()),
+//         (TokenType::CurlyBracketClose, "".to_string()),
+//         (TokenType::EndOfFile, "".to_string()),
+//     ],
+//    r#"
+//    int name 123;
+//    if name > 100 {
+//       out(name);
+//    } else if name < 123 or name < 123 and name < 123 {
+//         out("huh?");
+//    }
+//    fun make() int {
+//         return 123;
+//    }
+//    "#.to_string());
+//
+//     println!("Lexer tests complete");
+// }
