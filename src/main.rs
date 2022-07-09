@@ -1,6 +1,9 @@
+use crate::sb_is::interpret;
 mod lexer;
-mod parser;
+mod sb_is;
+mod interpreter;
+// mod check;
 
 fn main() {
-    println!("Hello, world!");
+    interpret("main.sbis".to_string(), true)
 }
