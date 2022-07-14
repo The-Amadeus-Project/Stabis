@@ -1,0 +1,35 @@
+2 create_stack
+
+// ------------ //
+
+1
+
+9998 loop
+    dup
+    1
+    +
+end
+
+main_stack_length loop
+    dup 3 % 0 == if
+        2 push
+
+    lastly
+
+        dup 5 % 0 == if
+            2 push
+        lastly
+            drop
+        end
+    end
+end
+
+2 stack_length loop
+    2 pop
+end
+
+main_stack_length 1 - loop
+    +
+end
+
+println
