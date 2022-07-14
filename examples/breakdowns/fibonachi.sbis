@@ -1,20 +1,25 @@
-1           //
-dup
-println
+// the main stack is stack 0, stack 0 is essentially where
+// everything basically happens, math operation, comparisons
 
-2
+            // the stack state,   description
+1           // 1                : this pushes 1 to the main stack
+dup         // 1 1              : duplicates the top of the stack
+println     // 1                : gets the top element of the stack then prints it
 
-100
-loop
+2           // 1 2              : pushes 2 to the main stack
 
-    dup
-    println
+100         // 1 2 100          : pushes 100 to the main stack
+ loop       // 1 2              : this will pop the top of the main stack, in this case this will loop 100 times, from here to line 20
 
-    dup
-    rotate
-    +
-end
+    dup     // 1 2 2            : duplicates the top of the stack
+    println // 1 2              : gets the top element of the stack then prints it
 
-println
+    dup     // 1 2 2            : duplicates the top of the stack
+    rotate  // 2 2 1            : brings the 3rd top element of the main stack to the front
+    +       // 2 3              : pops the top 2 element, add the two together then pushes back to the main stack
+end         // 2 3              : this will tell the program to check if a loop or if statement is ongoing
+                            //  if not it will raise an error else it will go back if its a loo
 
-drop
+println     // 2                : gets the top element of the stack then prints it
+
+drop        //                  : drops the top element of the stack so that we dont get unhandled data error
