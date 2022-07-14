@@ -1,0 +1,13 @@
+1 dup println
+2
+
+100 loop
+    dup println
+
+    dup
+    rotate
+    +
+end
+
+println
+drop
