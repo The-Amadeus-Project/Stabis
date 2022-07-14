@@ -14,4 +14,10 @@ create_stack // creates stack 1, pops the top element of the main stack
 +   // pops the top two elements of the stack, adding, then pushes the result back
 print // pops the top element then prints it
 
+
+12 1 +  // pushes 12 and 1 then adds them -> 12 + 1
+3 *     // pushes 3 to the main stack the multiplies the last result and three -> res * 3
+3 %     // pushes 3 the mods the last result and three -> res % 3
+// (12 + 1) * 3 % 3
+print   // pops the top element of the main stack then prints it
 ```
