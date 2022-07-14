@@ -1,9 +1,9 @@
 use crate::interpreter::Interpreter;
-use crate::lexer::{Lexer, Token, TokenType };
+use crate::lexer::{Lexer, Token };
 
 fn lex(file_path: String, debug: bool) -> Vec<Token> {
     let file_content = std::fs::read_to_string(file_path).expect("couldnt open file");
-    let mut lexed = Lexer::new().lex_text(file_content);
+    let lexed = Lexer::new().lex_text(file_content);
     if debug {
         for part in &lexed {
             println!("{:?}", part)
@@ -33,7 +33,8 @@ fn lex(file_path: String, debug: bool) -> Vec<Token> {
 // }
 
 
-pub fn compile(file_path: String) {
+pub fn compile(file_path: String, debug: bool) -> String {
+    let lexed = lex(file_path, debug);
     unimplemented!()
 }
 
