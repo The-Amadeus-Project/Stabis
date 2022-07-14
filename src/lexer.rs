@@ -4,7 +4,6 @@ pub enum TokenType {
     // types
     String,
     Integer,
-    Character,
     FloatingPoint,
     Boolean,
 
@@ -13,8 +12,13 @@ pub enum TokenType {
     // keywords
     If,
     Else,
+    Lastly,
+    End,
     While,
+    Loop,
+    Break,
     Import,
+    Inst,
 
     // Operation
     MathOperation,
@@ -83,8 +87,6 @@ pub struct Lexer {
     y: i32,
     tok_start_x: i32,
     tok_start_y: i32,
-    log: Vec<String>,
-    error: Vec<String>,
     current_tokens: Vec<Token>
 }
 
@@ -99,8 +101,6 @@ impl Lexer {
             y: 1,
             tok_start_x: 0,
             tok_start_y: 0,
-            log: vec![],
-            error: vec![],
             current_tokens: vec![]
         }
     }
@@ -295,8 +295,14 @@ impl Lexer {
                     match &*unknown_length {
                         "if" => self.add_special(TokenType::If),
                         "else" => self.add_special(TokenType::Else),
+                        "end" => self.add_special(TokenType::End),
+                        "lastly" => self.add_special(TokenType::Lastly),
+                        "inst" => self.add_special(TokenType::Inst),
                         "true" => self.add_special_bare(TokenType::Boolean, "true".to_string()),
                         "false" => self.add_special_bare(TokenType::Boolean, "false".to_string()),
+                        "loop" => self.add_special(TokenType::Loop),
+                        "while" => self.add_special(TokenType::While),
+                        "break" => self.add_special(TokenType::Break),
                         _ => {self.add_identifier(unknown_length.clone())}
                     }
                     id_on = false;
@@ -305,6 +311,7 @@ impl Lexer {
                 }
 
                 self.pos_starter();
+                const CR: char = 13 as char;
                 match self.current_char {
                     '=' =>
                         {
@@ -396,7 +403,8 @@ impl Lexer {
                     ' ' => {},
                     '\n' => {},
                     '\t' => {},
-                    _ => {unimplemented!("not added -> {} <-, at line {} char {}", self.current_char, self.tok_start_y, self.tok_start_x)}
+                    CR => {},
+                    _ => { println!("{}", self.current_char as u8); unimplemented!("not added -> {} <-, at line {} char {}", self.current_char, self.tok_start_y, self.tok_start_x)}
                 }
             }
         }
@@ -412,6 +420,12 @@ impl Lexer {
             match &*unknown_length {
                 "import" => self.add_special(TokenType::Import),
                 "if" => self.add_special(TokenType::If),
+                "end" => self.add_special(TokenType::End),
+                "lastly" => self.add_special(TokenType::Lastly),
+                "inst" => self.add_special(TokenType::Inst),
+                "loop" => self.add_special(TokenType::Loop),
+                "while" => self.add_special(TokenType::While),
+                "break" => self.add_special(TokenType::Break),
                 "true" => self.add_special_bare(TokenType::Boolean, "true".to_string()),
                 "false" => self.add_special_bare(TokenType::Boolean, "false".to_string()),
                 _ => {self.add_identifier(unknown_length.clone())}
