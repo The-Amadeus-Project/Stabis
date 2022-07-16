@@ -1,36 +1,74 @@
 use std::env::args;
-use std::process::exit;
+use std::io;
+use std::io::Write;
+use std::process::{Command, exit};
 use crate::sb_is::{compile, interpret};
 mod lexer;
 mod sb_is;
 mod interpreter;
+mod compiler;
+mod base;
+mod type_checker;
 // mod check;
 
 fn usage(){
     let message = r#"------------USAGE------------
-command filepath [mode]
+command filepath [mode] [etc]
 
 [modes] [params]        [decs]
     -i                   interpret program
-    -c  <output_path>    compile program
+    -c                   compile program
+
+[etc]
+    --debug             debug, shows tokenss
+
     "#;
     println!("{}", message);
 }
 
 fn main() {
     let mut args: Vec<String> = args().collect();
-    if args.len() == 2 {
+    if args.len() < 3 {
         usage();
         exit(1)
     }
     let _program_path = args.remove(0);
     let file_path = args.remove(0);
     let mode = args.remove(0);
+    let mut debug = false;
+    for arg in args {
+        if arg == "--debug"{
+            debug = true;
+        }
+    }
     if mode == "-c" {
-        let file_content = std::fs::read_to_string(file_path).unwrap();
-        let result = compile(file_content);
+        let result = compile(file_path.clone(), debug);
+        let mut file_res = std::fs::File::create(file_path.replace(".sbis", ".rs"));
+        if file_res.is_err(){
+            std::fs::write(file_path.replace(".sbis", ".rs"), result).unwrap();
+        } else {
+            let mut file = file_res.unwrap();
+            let res = file.write_all(result.as_ref());
+        }
+        Command::new("rustc")
+            .args([&*file_path.replace(".sbis", ".rs"), "-o", &*file_path.replace(".sbis", "")])
+            .output()
+            .expect("failed to execute process");
+    } else if mode == "-r" {
+        let result = compile(file_path.clone(), debug);
+        let mut file_res = std::fs::File::create(file_path.replace(".sbis", ".rs"));
+        if file_res.is_err(){
+            std::fs::write(file_path.replace(".sbis", ".rs"), result).unwrap();
+        } else {
+            let mut file = file_res.unwrap();
+            let res = file.write_all(result.as_ref());
+        }
+        Command::new("rustc")
+            .args([&*file_path.replace(".sbis", ".rs"), "-o", &*file_path.replace(".sbis", "")])
+            .output()
+            .expect("failed to execute process");
     } else if mode == "-i" {
-        interpret("main.sbis".to_string(), true)
+        interpret(file_path, debug)
     } else {
         panic!("LOL NO!")
     }
