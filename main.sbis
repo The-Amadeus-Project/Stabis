@@ -1,3 +1,32 @@
-"name? " input
-"Hello " print
+2 create_stack
+
+// ------- //
+
+1 2
+
+dup 2 push
+
+// 2 3
+10000 loop
+    dup rotate +
+
+    dup 4000000 > if
+        break
+    lastly
+        dup 2 % 0 == if
+            dup 2 push
+        end
+    end
+end
+
+drop drop
+
+2 stack_length loop
+    2 pop
+end
+
+main_stack_length 1 - loop
+    +
+end
+
 println
