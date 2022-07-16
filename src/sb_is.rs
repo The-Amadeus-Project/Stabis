@@ -1,3 +1,5 @@
+use std::fs;
+use crate::compiler::Compiler;
 use crate::interpreter::Interpreter;
 use crate::lexer::{Lexer, Token };
 
@@ -35,7 +37,7 @@ fn lex(file_path: String, debug: bool) -> Vec<Token> {
 
 pub fn compile(file_path: String, debug: bool) -> String {
     let lexed = lex(file_path, debug);
-    unimplemented!()
+    Compiler::new(lexed).run()
 }
 
 pub fn interpret(file_path: String, debug: bool) {
