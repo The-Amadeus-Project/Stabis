@@ -1,4 +1,3 @@
-
 #[derive(PartialEq, Eq, Debug, Clone)]
 pub enum TokenType {
     // types
@@ -34,7 +33,7 @@ pub enum TokenType {
     ParenthesisOpen,
     ParenthesisClose,
 
-    NullForParser
+    NullForParser,
 }
 
 #[derive(PartialEq, Eq, Debug, Clone)]
@@ -51,7 +50,7 @@ impl Token {
             token_type,
             value,
             x: 0,
-            y: 0
+            y: 0,
         }
     }
     pub fn is_string(&self) -> bool {
@@ -69,8 +68,8 @@ impl Token {
     pub fn is_data_type(&self) -> bool {
         self.is_float() || self.is_bool() || self.is_string() || self.is_integer()
     }
-    pub fn true_value(&self) -> String{
-        if self.is_string(){
+    pub fn true_value(&self) -> String {
+        if self.is_string() {
             format!("\"{}\"", self.value)
         } else {
             self.value.clone()
@@ -87,7 +86,7 @@ pub struct Lexer {
     y: i32,
     tok_start_x: i32,
     tok_start_y: i32,
-    current_tokens: Vec<Token>
+    current_tokens: Vec<Token>,
 }
 
 impl Lexer {
@@ -101,21 +100,20 @@ impl Lexer {
             y: 1,
             tok_start_x: 0,
             tok_start_y: 0,
-            current_tokens: vec![]
+            current_tokens: vec![],
         }
     }
-    pub fn pos_starter(&mut self){
+    pub fn pos_starter(&mut self) {
         self.tok_start_x = self.x;
         self.tok_start_y = self.y;
     }
     pub fn next_char(&mut self) -> bool {
         self.index += 1;
-        if self.index >= self.text_to_lex.len() as i32{
+        if self.index >= self.text_to_lex.len() as i32 {
             false
-
         } else {
             self.current_char = self.text_to_lex[self.index as usize];
-            if self.current_char == '\n'{
+            if self.current_char == '\n' {
                 self.y += 1;
                 self.x = 0;
             } else {
@@ -137,31 +135,31 @@ impl Lexer {
     pub fn get_char(&self, ahead: i32) -> Option<char> {
         Some(self.text_to_lex[(self.index + ahead) as usize])
     }
-     pub fn get_next_char(&self) -> Option<char> {
+    pub fn get_next_char(&self) -> Option<char> {
         self.get_char(1)
     }
-    pub fn add_base(&mut self, tok_type: TokenType, value: String){
+    pub fn add_base(&mut self, tok_type: TokenType, value: String) {
         let mut tok = Token::new(tok_type, value);
         tok.x = self.tok_start_x as u32;
         tok.y = self.tok_start_y as u32;
         self.current_tokens.push(tok);
     }
-    pub fn add_special(&mut self, tok_type: TokenType ){
+    pub fn add_special(&mut self, tok_type: TokenType) {
         self.add_base(tok_type, "".to_string());
     }
-    pub fn add_special_bare(&mut self, tok_type: TokenType, value: String){
+    pub fn add_special_bare(&mut self, tok_type: TokenType, value: String) {
         self.add_base(tok_type, value);
     }
-    pub fn add_string(&mut self, value: String){
+    pub fn add_string(&mut self, value: String) {
         self.add_base(TokenType::String, value);
     }
-    pub fn add_integer(&mut self, value: String){
+    pub fn add_integer(&mut self, value: String) {
         self.add_base(TokenType::Integer, value);
     }
-    pub fn add_float(&mut self, value: String){
+    pub fn add_float(&mut self, value: String) {
         self.add_base(TokenType::FloatingPoint, value);
     }
-    pub fn add_identifier(&mut self, value: String){
+    pub fn add_identifier(&mut self, value: String) {
         self.add_base(TokenType::Identifier, value);
     }
     fn lex(&mut self) -> Vec<Token> {
@@ -177,10 +175,13 @@ impl Lexer {
 
         */
         let num: Vec<char> = "0123456789".chars().collect();
-        let allowed_for_id: Vec<char> = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_1234567890".chars().collect();
+        let allowed_for_id: Vec<char> =
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_1234567890"
+                .chars()
+                .collect();
 
         let mut unknown_length = "".to_string();
-        let mut unknown_length_being_used= false;
+        let mut unknown_length_being_used = false;
         let mut str_on = false;
         let mut comment_on = false;
         let mut id_on = false;
@@ -189,11 +190,10 @@ impl Lexer {
         let mut int = false;
         let mut float = false;
 
-
         while self.run {
-            if !self.next_char(){
+            if !self.next_char() {
                 self.run = false;
-                break
+                break;
             }
 
             if self.current_char == '"' && !comment_on {
@@ -207,16 +207,21 @@ impl Lexer {
                     str_on = true;
 
                     if unknown_length_being_used {
-                        panic!("shit something went wrong! at line {} char {}", self.y, self.tok_start_y);
+                        panic!(
+                            "shit something went wrong! at line {} char {}",
+                            self.y, self.tok_start_y
+                        );
                     }
 
                     unknown_length_being_used = true;
                 }
-
             } else if str_on || comment_on {
                 if self.current_char == '\n' {
                     if str_on {
-                        panic!("unclosed string at line {} char {}", self.tok_start_y, self.tok_start_x);
+                        panic!(
+                            "unclosed string at line {} char {}",
+                            self.tok_start_y, self.tok_start_x
+                        );
                     } else {
                         comment_on = false;
                         unknown_length_being_used = false;
@@ -225,7 +230,6 @@ impl Lexer {
                 } else {
                     unknown_length += &self.current_char.to_string();
                 }
-
             } else if num.contains(&self.current_char) && !id_on {
                 if num_on {
                     unknown_length += &self.current_char.to_string();
@@ -236,18 +240,25 @@ impl Lexer {
                     int = true;
 
                     if unknown_length_being_used {
-                        panic!("shit something went wrong! at line {} char {}", self.y, self.tok_start_y);
+                        panic!(
+                            "shit something went wrong! at line {} char {}",
+                            self.y, self.tok_start_y
+                        );
                     }
 
                     unknown_length_being_used = true;
                 }
-            } else if self.current_char == '.' && num_on && num.contains(&self.get_next_char_ignore_space().expect(&format!("expected char! at line {} char {}", self.y, self.tok_start_y))){
+            } else if self.current_char == '.'
+                && num_on
+                && num.contains(&self.get_next_char_ignore_space().expect(&format!(
+                    "expected char! at line {} char {}",
+                    self.y, self.tok_start_y
+                )))
+            {
                 int = false;
                 float = true;
                 unknown_length += ".";
-
-            } else if allowed_for_id.contains(&self.current_char){
-
+            } else if allowed_for_id.contains(&self.current_char) {
                 // to avoid errors
                 if num_on {
                     if int {
@@ -272,7 +283,10 @@ impl Lexer {
                     id_on = true;
 
                     if unknown_length_being_used {
-                        panic!("shit something went wrong! at line {} char {}", self.y, self.tok_start_y);
+                        panic!(
+                            "shit something went wrong! at line {} char {}",
+                            self.y, self.tok_start_y
+                        );
                     }
 
                     unknown_length_being_used = true;
@@ -286,7 +300,10 @@ impl Lexer {
                         self.add_float(unknown_length.clone());
                         float = false;
                     } else {
-                        panic!("what? how?! at line {} char {}", self.tok_start_y, self.tok_start_x);
+                        panic!(
+                            "what? how?! at line {} char {}",
+                            self.tok_start_y, self.tok_start_x
+                        );
                     }
                     num_on = false;
                     unknown_length_being_used = false;
@@ -303,7 +320,7 @@ impl Lexer {
                         "loop" => self.add_special(TokenType::Loop),
                         "while" => self.add_special(TokenType::While),
                         "break" => self.add_special(TokenType::Break),
-                        _ => {self.add_identifier(unknown_length.clone())}
+                        _ => self.add_identifier(unknown_length.clone()),
                     }
                     id_on = false;
                     unknown_length_being_used = false;
@@ -313,98 +330,125 @@ impl Lexer {
                 self.pos_starter();
                 const CR: char = 13 as char;
                 match self.current_char {
-                    '=' =>
-                        {
-                            let next = self.get_next_char();
-                            if !next.is_some() {
-                                panic!("Expected Continuation at line {} char {}", self.tok_start_y, self.tok_start_x);
-                            }
-                            let next_char = next.unwrap();
-                            if next_char == '=' {
-                                self.add_special_bare(TokenType::ComparisonOperation, "==".to_string());
-                                self.next_char();
-                            } else {
-                               panic!("Please use assignment arrow '<-',  at line {} char {}", self.tok_start_y, self.tok_start_x);
-                            }
-                        },
-                    '!' =>
-                        {
-                            let next = self.get_next_char();
-                            if !next.is_some() {
-                                panic!("Expected Continuation at line {} char {}", self.tok_start_y, self.tok_start_x);
-                            }
-                            let next_char = next.unwrap();
-                            if next_char == '=' {
-                                self.add_special_bare(TokenType::ComparisonOperation, "!=".to_string());
-                                self.next_char();
-                            } else {
-                                panic!("Unexpected '{}',  at line {} char {}", self.current_char, self.tok_start_y, self.tok_start_x);
-                            }
-                        },
+                    '=' => {
+                        let next = self.get_next_char();
+                        if !next.is_some() {
+                            panic!(
+                                "Expected Continuation at line {} char {}",
+                                self.tok_start_y, self.tok_start_x
+                            );
+                        }
+                        let next_char = next.unwrap();
+                        if next_char == '=' {
+                            self.add_special_bare(TokenType::ComparisonOperation, "==".to_string());
+                            self.next_char();
+                        } else {
+                            panic!(
+                                "Please use assignment arrow '<-',  at line {} char {}",
+                                self.tok_start_y, self.tok_start_x
+                            );
+                        }
+                    }
+                    '!' => {
+                        let next = self.get_next_char();
+                        if !next.is_some() {
+                            panic!(
+                                "Expected Continuation at line {} char {}",
+                                self.tok_start_y, self.tok_start_x
+                            );
+                        }
+                        let next_char = next.unwrap();
+                        if next_char == '=' {
+                            self.add_special_bare(TokenType::ComparisonOperation, "!=".to_string());
+                            self.next_char();
+                        } else {
+                            panic!(
+                                "Unexpected '{}',  at line {} char {}",
+                                self.current_char, self.tok_start_y, self.tok_start_x
+                            );
+                        }
+                    }
                     '%' => self.add_special_bare(TokenType::MathOperation, "%".to_string()),
                     '+' => self.add_special_bare(TokenType::MathOperation, "+".to_string()),
                     '-' => self.add_special_bare(TokenType::MathOperation, "-".to_string()),
-                    '/' =>
-                        {
-                            let next = self.get_next_char();
-                            if !next.is_some() {
-                                panic!("Expected Continuation at line {} char {}", self.tok_start_y, self.tok_start_x);
-                            }
-                            let next_char = next.unwrap();
-                            if next_char == '/' {
-                                self.pos_starter();
-                                comment_on = true;
+                    '/' => {
+                        let next = self.get_next_char();
+                        if !next.is_some() {
+                            panic!(
+                                "Expected Continuation at line {} char {}",
+                                self.tok_start_y, self.tok_start_x
+                            );
+                        }
+                        let next_char = next.unwrap();
+                        if next_char == '/' {
+                            self.pos_starter();
+                            comment_on = true;
 
-                                if unknown_length_being_used {
-                                    panic!("shit something went wrong! at line {} char {}", self.y, self.tok_start_y);
-                                }
-
-                                unknown_length_being_used = true;
-                            } else {
-                                 self.add_special_bare(TokenType::MathOperation, "/".to_string())
+                            if unknown_length_being_used {
+                                panic!(
+                                    "shit something went wrong! at line {} char {}",
+                                    self.y, self.tok_start_y
+                                );
                             }
-                    },
+
+                            unknown_length_being_used = true;
+                        } else {
+                            self.add_special_bare(TokenType::MathOperation, "/".to_string())
+                        }
+                    }
                     '*' => self.add_special_bare(TokenType::MathOperation, "*".to_string()),
                     '.' => self.add_special(TokenType::DirectMemberSelection),
                     '(' => self.add_special(TokenType::ParenthesisOpen),
                     ')' => self.add_special(TokenType::ParenthesisClose),
-                    '>' =>
-                        {
-                            let next = self.get_next_char();
-                            if !next.is_some() {
-                                panic!("Expected Continuation at line {} char {}", self.tok_start_y, self.tok_start_x);
-                            }
-                            let next_char = next.unwrap();
-                            if next_char == '=' {
-                                self.add_special_bare(TokenType::ComparisonOperation, ">=".to_string());
-                                self.next_char();
-                            } else {
-                                self.add_special_bare(TokenType::ComparisonOperation, ">".to_string())
-                            }
-                        },
-                    '<' =>
-                        {
-                            let next = self.get_next_char();
-                            if !next.is_some() {
-                                panic!("Expected Continuation at line {} char {}", self.tok_start_y, self.tok_start_x);
-                            }
-                            let next_char = next.unwrap();
-                            if next_char == '=' {
-                                self.add_special_bare(TokenType::ComparisonOperation, "<=".to_string());
-                                self.next_char();
-                            } else {
-                                self.add_special_bare(TokenType::ComparisonOperation, "<".to_string())
-                            }
-                        },
+                    '>' => {
+                        let next = self.get_next_char();
+                        if !next.is_some() {
+                            panic!(
+                                "Expected Continuation at line {} char {}",
+                                self.tok_start_y, self.tok_start_x
+                            );
+                        }
+                        let next_char = next.unwrap();
+                        if next_char == '=' {
+                            self.add_special_bare(TokenType::ComparisonOperation, ">=".to_string());
+                            self.next_char();
+                        } else {
+                            self.add_special_bare(TokenType::ComparisonOperation, ">".to_string())
+                        }
+                    }
+                    '<' => {
+                        let next = self.get_next_char();
+                        if !next.is_some() {
+                            panic!(
+                                "Expected Continuation at line {} char {}",
+                                self.tok_start_y, self.tok_start_x
+                            );
+                        }
+                        let next_char = next.unwrap();
+                        if next_char == '=' {
+                            self.add_special_bare(TokenType::ComparisonOperation, "<=".to_string());
+                            self.next_char();
+                        } else {
+                            self.add_special_bare(TokenType::ComparisonOperation, "<".to_string())
+                        }
+                    }
                     '{' => self.add_special(TokenType::CurlyBracketOpen),
                     '}' => self.add_special(TokenType::CurlyBracketClose),
                     '[' => self.add_special(TokenType::BracketOpen),
                     ']' => self.add_special(TokenType::BracketClose),
-                    ' ' => {},
-                    '\n' => {},
-                    '\t' => {},
-                    CR => {},
-                    _ => { println!("{}", self.current_char as u8); unimplemented!("not added -> {} <-, at line {} char {}", self.current_char, self.tok_start_y, self.tok_start_x)}
+                    ' ' => {}
+                    '\n' => {}
+                    '\t' => {}
+                    CR => {}
+                    _ => {
+                        println!("{}", self.current_char as u8);
+                        unimplemented!(
+                            "not added -> {} <-, at line {} char {}",
+                            self.current_char,
+                            self.tok_start_y,
+                            self.tok_start_x
+                        )
+                    }
                 }
             }
         }
@@ -428,10 +472,13 @@ impl Lexer {
                 "break" => self.add_special(TokenType::Break),
                 "true" => self.add_special_bare(TokenType::Boolean, "true".to_string()),
                 "false" => self.add_special_bare(TokenType::Boolean, "false".to_string()),
-                _ => {self.add_identifier(unknown_length.clone())}
+                _ => self.add_identifier(unknown_length.clone()),
             }
         } else if str_on {
-            panic!("unclosed string at line {} char {}", self.tok_start_y, self.tok_start_x);
+            panic!(
+                "unclosed string at line {} char {}",
+                self.tok_start_y, self.tok_start_x
+            );
         }
         self.add_special(TokenType::EndOfFile);
         self.current_tokens.clone()
@@ -443,9 +490,9 @@ impl Lexer {
     }
 }
 
-fn single_test(expected: Vec<(TokenType, String)>, to_lex: String){
+fn single_test(expected: Vec<(TokenType, String)>, to_lex: String) {
     let mut lexer_test = Lexer::new();
-    let start_lex =lexer_test.lex_text(to_lex);
+    let start_lex = lexer_test.lex_text(to_lex);
     let mut res_lex = vec![];
     for token in start_lex {
         res_lex.push((token.token_type, token.value))
@@ -454,7 +501,10 @@ fn single_test(expected: Vec<(TokenType, String)>, to_lex: String){
     if res {
         println!("Test Passed: {:?}", res_lex)
     } else {
-        println!("Test Failed, \n\texpected {:?} \n\tgot      {:?}", expected, res_lex)
+        println!(
+            "Test Failed, \n\texpected {:?} \n\tgot      {:?}",
+            expected, res_lex
+        )
     }
 }
 
