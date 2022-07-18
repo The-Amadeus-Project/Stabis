@@ -36,7 +36,7 @@ print   // pops the top element of the main stack then prints it
 - [x] if statements
 - [x] else statements 
 - [x] lastly statements
-- [ ] new function using inst 
+- [x] new function using inst 
 
 ### Interpretation
 - [x] pushing data types to main stack 
