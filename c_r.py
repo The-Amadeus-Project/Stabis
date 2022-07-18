@@ -7,7 +7,7 @@ python c_r.py filepath.sbis
 
 if sys.argv == 1:
     print("Expected File Path")
-elif sys.argv > 2:
+elif len(sys.argv) > 2:
     print("Expected only File Path as argument")
 file = sys.argv[1]
 
