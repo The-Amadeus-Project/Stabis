@@ -1,7 +1,7 @@
-use std::fs;
 use crate::compiler::Compiler;
 use crate::interpreter::Interpreter;
-use crate::lexer::{Lexer, Token };
+use crate::lexer::{Lexer, Token};
+use std::fs;
 
 fn lex(file_path: String, debug: bool) -> Vec<Token> {
     let file_content = std::fs::read_to_string(file_path).expect("couldnt open file");
@@ -33,7 +33,6 @@ fn lex(file_path: String, debug: bool) -> Vec<Token> {
 //     // type_checker.check_program(return_parsed.clone());
 //     return_parsed
 // }
-
 
 pub fn compile(file_path: String, debug: bool) -> String {
     let lexed = lex(file_path, debug);
