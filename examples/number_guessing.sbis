@@ -1,0 +1,19 @@
+push_time 101 % // generate num between 1 - 100
+"num between 1 - 100: " input as_int
+
+
+100 loop
+    dup2 > if
+        "higher" println
+    else dup2 < if
+        "lower" println
+    lastly
+        break
+    end
+
+    drop
+    "num between 1 - 100: " input as_int
+end
+
+drop
+"the number was " print println
