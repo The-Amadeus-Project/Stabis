@@ -14,7 +14,7 @@ pub struct Compiler {
 impl Compiler {
     fn error(&mut self, error_body: String, pos_x: u32, pos_y: u32, call_name: String) {
         panic!(
-            "At line {} char {},\n  Couldn't execute '{}' because of\n  '{}'  ",
+            "\nAt line {} char {}, Couldn't execute '{}' because of\n  '{}'  ",
             pos_y, pos_x, call_name, error_body
         )
     }
@@ -98,6 +98,9 @@ impl Compiler {
                                 (self.current_instruction.x, self.current_instruction.y)));
                         } else if self.peak_next_instruction() == TokenType::Inst {
                             let func_name = self.current_instruction.value.clone();
+                            if self.user_defined_functions.contains(&func_name){
+                                self.error(format!("Error: Function '{}' is already defined", self.current_instruction.value), self.current_instruction.x, self.current_instruction.y, "inst".to_string());
+                            }
                             self.scopes.push("inst".to_string());
                             self.final_out.push("inst".to_string());
                             self.final_out.push(func_name.clone());

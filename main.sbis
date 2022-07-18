@@ -1,5 +1,9 @@
-// monty hall
+die_hard inst
+    "lmao" println
+end
 
+die_hard inst
+    "lmao" println
+end
 
-push_time 3 % 1 +
-println
+die_hard
