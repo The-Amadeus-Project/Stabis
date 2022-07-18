@@ -387,7 +387,7 @@ impl Compiler {
                         functions += &*format!("self.{}\n", part);
                     }
                 }
-
+                instruction = false;
             } else if part == "lastly" {
                 let loc = self.scope_locations.pop().unwrap();
                 let top = scope_track.pop().unwrap();

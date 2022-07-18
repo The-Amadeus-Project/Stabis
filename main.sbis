@@ -2,7 +2,7 @@ die_hard inst
     "lmao" println
 end
 
-die_hard inst
+die_har inst
     "lmao" println
 end
 
