@@ -67,6 +67,14 @@ impl Value {
             val_string: value,
         }
     }
+    pub fn value(&self) -> String {
+        match self.val_type {
+            ValueType::Int => { self.val_int.to_string() }
+            ValueType::Float => { self.val_float.to_string() }
+            ValueType::String => { self.val_string.clone() }
+            ValueType::Boolean => { self.val_bool.to_string() }
+        }
+    }
 }
 
 pub(crate) struct Program {
@@ -1404,13 +1412,24 @@ impl Program {
             loc.0,
             loc.1,
         );
-        println!(
-            "{:?}",
-            self.stacks.get(&(stack_to_get_len.val_int as usize))
-        );
+        let mut res = "[".to_string();
+        let stack = self.stacks.get(&(stack_to_get_len.val_int as usize)).unwrap();
+        for element in stack {
+            res += &*(element.value() + ", ");
+        }
+        res = substring(res.clone(), 0, res.len() - 2).unwrap();
+        res += "]";
+        println!("{}", res);
     }
-    fn print_main_stack(&mut self, loc: (u32, u32)) {
-        println!("{:?}", self.stacks.get(&0));
+    fn print_main_stack(&mut self, _loc: (u32, u32)) {
+        let mut res = "[".to_string();
+        let stack = self.stacks.get(&0).unwrap();
+        for element in stack {
+            res += &*(element.value() + ", ");
+        }
+        res = substring(res.clone(), 0, res.len() - 2).unwrap();
+        res += "]";
+        println!("{}", res);
     }
     fn dup(&mut self, loc: (u32, u32)) {
         self.check(0, 1, true, "dup".to_string(), loc.0, loc.1);

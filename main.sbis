@@ -1,9 +1,4 @@
-die_hard inst
-    "lmao" println
-end
+main inst in out
 
-die_har inst
-    "lmao" println
-end
 
-die_hard
+end

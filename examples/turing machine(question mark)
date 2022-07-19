@@ -1,0 +1,46 @@
+// turing machine
+
+
+2 create_stack
+// ----------------
+
+0
+
+100 loop
+    0 2 push
+end
+
+l inst
+    2 push
+end
+
+r inst
+    2 pop
+end
+
+d inst
+    1 -
+end
+
+i inst
+    1 +
+end
+
+s inst
+    dup println
+end
+
+10 loop
+    i r i r i
+end
+
+print_main_stack
+
+2 stack_length loop
+    2 pop
+end
+
+1 stack_length loop
+    drop
+end
+
