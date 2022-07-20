@@ -1,10 +1,10 @@
-# SBis
+# Stabis
 A stack-based language, now you know what the name means, as I have said im uninspired.
 SbIs is a stack-based concatenative language
 
 # Purpose
-SBis is a project for me trying to learn language 
-development learning the workflows and maybe a project to flex people on
+Stabis is a project for me learning language 
+development, learning the workflows and maybe a project to flex people on, totally not because I hate naming variables
 
 
 ## syntax :: check design.md
