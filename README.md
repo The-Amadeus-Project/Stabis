@@ -1,10 +1,12 @@
 # Stabis
-A stack-based language, now you know what the name means, as I have said im uninspired.
-SbIs is a stack-based concatenative language
+A stack-based concatenative similar to forth and porth(its like forth but written in python), 
+Stabis is like Porth but written in rust
 
 # Purpose
 Stabis is a project for me learning language 
-development, learning the workflows and maybe a project to flex people on, totally not because I hate naming variables
+development, learning the workflows of making a large project and 
+maybe a project to flex people on, totally not because I hate 
+naming variables
 
 
 ## syntax :: check design.md
@@ -29,6 +31,8 @@ print   // pops the top element of the main stack then prints it
 
 ## RoadMap
 - [ ] Documentation :: check cheatsheet.md
+- [ ] Partial Type Checking
+- [ ] Full Type Checking
 ### Compilation
 - [x] pushing data types to main stack 
 - [x] calling built-in functions
@@ -50,7 +54,7 @@ print   // pops the top element of the main stack then prints it
 ## Requirements
 - Rust 1.6
 - Python 3
-- Git (Optional, you can download the repo from github website)
+- Git (Optional, you can download the repo from GitHub website)
 
 ## How To Use
 First clone the repo
@@ -60,7 +64,7 @@ git clone https://github.com/The-Amadeus-Project/SB-instruction-set.git
 
 Change directory to the cloned repo
 ```
-cd SB-instruction-set
+cd Stabis
 ```
 
 now run Cargo build release
