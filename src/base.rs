@@ -78,7 +78,6 @@ impl Value {
 }
 
 pub(crate) struct Program {
-    built_in_functions: Vec<String>,
     stacks: HashMap<usize, Vec<Value>>,
 }
 impl Program {
@@ -1489,23 +1488,6 @@ impl Program {
     }
     pub fn new() -> Self {
         let mut new = Self {
-            built_in_functions: vec![
-                "print".to_string(),
-                "println".to_string(),
-                "pop".to_string(),
-                "push".to_string(),
-                "create_stack".to_string(),
-                "dup".to_string(),
-                "dup2".to_string(),
-                "swap".to_string(),
-                "rotate".to_string(),
-                "drop".to_string(),
-                "main_stack_length".to_string(),
-                "stack_length".to_string(),
-                "print_stack".to_string(),
-                "print_main_stack".to_string(),
-                "input".to_string(),
-            ],
             stacks: HashMap::new(),
         };
         new.stacks.insert(0, vec![]);
