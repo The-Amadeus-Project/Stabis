@@ -1,4 +1,4 @@
-use crate::sb_is::{compile, interpret};
+use crate::stabis::{compile, interpret};
 use std::env::args;
 use std::io;
 use std::io::Write;
@@ -7,8 +7,8 @@ mod base;
 mod compiler;
 mod interpreter;
 mod lexer;
-mod sb_is;
-mod type_checker;
+mod stabis;
+mod checker;
 // mod check;
 
 fn usage() {
